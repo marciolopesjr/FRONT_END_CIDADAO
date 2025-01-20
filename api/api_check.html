@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Check</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        .status {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Check</h1>
+
+    <div id="registrationStatus" class="status">Clique em "Testar Registro"</div>
+    <div class="form-group">
+        <input type="text" id="regName" placeholder="Name">
+        <input type="text" id="regEmail" placeholder="Email">
+        <input type="text" id="regCpf" placeholder="CPF">
+        <input type="password" id="regPassword" placeholder="Password">
+        <button onclick="testRegister()">Testar Registro</button>
+    </div>
+
+    <div id="loginStatus" class="status">Clique em "Testar Login"</div>
+    <div class="form-group">
+        <input type="text" id="loginCpf" placeholder="CPF">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="testLogin()">Testar Login</button>
+    </div>
+
+    <div id="createDemandStatus" class="status">Clique em "Testar Criar Demanda"</div>
+    <div class="form-group">
+        <input type="text" id="demandCategory" placeholder="Category">
+        <input type="text" id="demandDescription" placeholder="Description">
+        <input type="text" id="demandLatitude" placeholder="Latitude">
+        <input type="text" id="demandLongitude" placeholder="Longitude">
+        <button onclick="testCreateDemand()">Testar Criar Demanda</button>
+    </div>
+
+    <script>
+        const apiBaseUrl = '/api'; // Adjust if your API is served on a different path
+
+        async function testRegister() {
+            const statusDiv = document.getElementById('registrationStatus');
+            statusDiv.textContent = 'Testando registro...';
+
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const cpf = document.getElementById('regCpf').value;
+            const password = document.getElementById('regPassword').value;
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('cpf', cpf);
+            formData.append('password', password);
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/register.php`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    statusDiv.textContent = `Registro OK: ${data.message}`;
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = `Registro Falhou: ${data.error}`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = `Erro ao conectar com a API: ${error}`;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        async function testLogin() {
+            const statusDiv = document.getElementById('loginStatus');
+            statusDiv.textContent = 'Testando login...';
+
+            const cpf = document.getElementById('loginCpf').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const formData = new FormData();
+            formData.append('cpf', cpf);
+            formData.append('password', password);
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/login.php`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    statusDiv.textContent = `Login OK: ${data.message} (User ID: ${data.user_id})`;
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = `Login Falhou: ${data.error}`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = `Erro ao conectar com a API: ${error}`;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        async function testCreateDemand() {
+            const statusDiv = document.getElementById('createDemandStatus');
+            statusDiv.textContent = 'Testando criar demanda...';
+
+            const category = document.getElementById('demandCategory').value;
+            const description = document.getElementById('demandDescription').value;
+            const latitude = document.getElementById('demandLatitude').value;
+            const longitude = document.getElementById('demandLongitude').value;
+
+            const formData = new FormData();
+            formData.append('category', category);
+            formData.append('description', description);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/create_demand.php`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    statusDiv.textContent = `Criar Demanda OK: ${data.message}`;
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = `Criar Demanda Falhou: ${data.error}`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = `Erro ao conectar com a API: ${error}`;
+                statusDiv.className = 'status error';
+            }
+        }
+    </script>
+</body>
+</html>
