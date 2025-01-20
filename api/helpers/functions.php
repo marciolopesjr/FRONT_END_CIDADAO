@@ -12,4 +12,8 @@ function send_json_response($data, $http_code = 200) {
     echo json_encode($data);
     exit;
 }
+
+function log_error($message) {
+    error_log("[".date("Y-m-d H:i:s")."] " . $message . "\n", 3, __DIR__ . '/../logs/error.log');
+}
 ?>
